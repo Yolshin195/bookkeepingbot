@@ -6,7 +6,7 @@ from aiogram.filters import Command
 from aiogram.types import Message
 
 from config import TELEGRAM_BOT_TOKEN
-
+from service.bookkeeping_api import reference
 
 router = Router()
 
@@ -61,7 +61,8 @@ async def command_start_handler(message: Message) -> None:
     """
     This handler receive messages with `/category` command
     """
-    await message.answer(f"this will your list category")
+    list_category = await reference.get_all()
+    await message.answer(list_category)
 
 
 @router.message()
