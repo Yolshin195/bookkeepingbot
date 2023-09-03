@@ -7,6 +7,7 @@ from aiogram.types import Message
 
 from config import TELEGRAM_BOT_TOKEN
 from service.bookkeeping_api import reference
+from use_case.create_user import create_user
 
 router = Router()
 
@@ -21,11 +22,12 @@ async def command_start_handler(message: Message) -> None:
     # and the target chat will be passed to :ref:`aiogram.methods.send_message.SendMessage`
     # method automatically or call API method directly via
     # Bot instance: `bot.send_message(chat_id=message.chat.id, ...)`
+    await create_user(message.from_user.id, message.from_user.username)
     await message.answer(f"Hello, <b>{message.from_user.full_name}!</b>")
 
 
 @router.message(Command(commands=["help"]))
-async def command_start_handler(message: Message) -> None:
+async def command_help_handler(message: Message) -> None:
     """
     This handler receive messages with `/help` command
     """
@@ -37,7 +39,7 @@ async def command_start_handler(message: Message) -> None:
 
 
 @router.message(Command(commands=["expense"]))
-async def command_start_handler(message: Message) -> None:
+async def command_expense_handler(message: Message) -> None:
     """
     This handler receive messages with `/expense` command
     """
@@ -49,7 +51,7 @@ async def command_start_handler(message: Message) -> None:
 
 
 @router.message(Command(commands=["account"]))
-async def command_start_handler(message: Message) -> None:
+async def command_account_handler(message: Message) -> None:
     """
     This handler receive messages with `/account` command
     """
@@ -57,12 +59,24 @@ async def command_start_handler(message: Message) -> None:
 
 
 @router.message(Command(commands=["category"]))
-async def command_start_handler(message: Message) -> None:
+async def command_category_handler(message: Message) -> None:
     """
     This handler receive messages with `/category` command
     """
     list_category = await reference.get_all()
     await message.answer(list_category)
+
+
+@router.message(Command(commands=["settings"]))
+async def command_settings_handler(message: Message) -> None:
+    """
+    This handler receive messages with `/expense` command
+    """
+    await message.answer(f"Это ваши настройки для регистрации расходов: "
+                         f"\n\tAccount: ,"
+                         f"\n\tExpense(E)=0.00,"
+                         f"\n\tCategory(C)=Food,"
+                         f"\n\tComment(M)=Купил курочку")
 
 
 @router.message()
@@ -95,3 +109,6 @@ async def main() -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     asyncio.run(main())
+
+
+
